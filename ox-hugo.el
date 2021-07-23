@@ -4055,6 +4055,9 @@ links."
           (lambda (link)
             (let ((type (org-element-property :type link)))
               (when (member type '("custom-id" "id" "fuzzy"))
+                (if (eq type "id")
+                    ;; update id link locations to let `org-export-resolve-id-link' work
+                    (org-id-update-id-locations (directory-files "." t "\.org\$")))
                 (let* ((raw-link (org-element-property :raw-link link))
                        (destination (if (string= type "fuzzy")
                                         (org-export-resolve-fuzzy-link link info)
