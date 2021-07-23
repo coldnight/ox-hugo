@@ -78,6 +78,8 @@
 ;; `org-refile.el' is new in Org 9.4
 ;; https://code.orgmode.org/bzg/org-mode/commit/f636cf91b6cbe322eca56e23283f4614548c9d65
 (require 'org-refile nil :noerror)      ;For `org-get-outline-path'
+(require 'org-id nil :noerror)          ;For `org-id-goto'
+
 (declare-function org-hugo-pandoc-cite--parse-citations-maybe "ox-hugo-pandoc-cite")
 
 (defvar ffap-url-regexp)                ;Silence byte-compiler
@@ -2050,6 +2052,7 @@ and rewrite link paths to make blogging more seamless."
          (raw-path (org-element-property :path link))
          (type (org-element-property :type link))
          (link-is-url (member type '("http" "https" "ftp" "mailto"))))
+
     (when (and (stringp raw-path)
                link-is-url)
       (setq raw-path (org-blackfriday--url-sanitize
@@ -2062,6 +2065,9 @@ and rewrite link paths to make blogging more seamless."
      ;; Link type is handled by a special function.
      ((org-export-custom-protocol-maybe link desc 'md))
      ((member type '("custom-id" "id" "fuzzy"))
+      (if (eq type "id")
+          ;; update id link locations to let `org-export-resolve-id-link' work
+          (org-id-update-id-locations (directory-files "." t "\.org\$")))
       (let ((destination (if (string= type "fuzzy")
                              (org-export-resolve-fuzzy-link link info)
                            (org-export-resolve-id-link link info))))
