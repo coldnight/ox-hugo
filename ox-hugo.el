@@ -4061,7 +4061,7 @@ links."
                                       (progn
                                         ;; update `org-id-locations' if it's nil or empty hash table
                                         ;; to avoid broken link
-                                        (if (or (eq org-id-locations nil) (hash-table-empty-p org-id-locations))
+                                        (if (or (eq org-id-locations nil) (zerop (hash-table-count org-id-locations)))
                                             (org-id-update-id-locations (directory-files "." t "\.org\$" t)))
                                         (org-export-resolve-id-link link (org-export--collect-tree-properties ast info)))))
                        (source-path (org-hugo--get-element-path link info))
