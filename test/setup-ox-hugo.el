@@ -7,8 +7,8 @@
 (setq-default make-backup-files nil)
 
 ;; Toggle debug on error, including `user-error'.
-(setq debug-ignored-errors (remq 'user-error debug-ignored-errors))
-(toggle-debug-on-error)
+;; (setq debug-ignored-errors (remq 'user-error debug-ignored-errors))
+;; (toggle-debug-on-error)
 
 (defvar ox-hugo-test-setup-verbose nil
   "When non-nil, enable printing more messages from setup-ox-hugo.el.")
