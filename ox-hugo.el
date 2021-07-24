@@ -4014,11 +4014,11 @@ links."
          ;; in the current buffer.
          (ast (org-element-parse-buffer))
          (org-use-property-inheritance (org-hugo--selective-property-inheritance))
-         (info (org-export--collect-tree-properties ast (org-combine-plists
-                                                         (list :parse-tree ast)
-                                                         (org-export--get-export-attributes 'hugo)
-                                                         (org-export--get-buffer-attributes)
-                                                         (org-export-get-environment 'hugo))))
+         (info (org-combine-plists
+                (list :parse-tree ast)
+                (org-export--get-export-attributes 'hugo)
+                (org-export--get-buffer-attributes)
+                (org-export-get-environment 'hugo)))
          (local-variables (buffer-local-variables))
          (bound-variables (org-export--list-bound-variables))
 	 vars)
@@ -4052,6 +4052,10 @@ links."
           (lambda (link)
             (let ((type (org-element-property :type link)))
               (when (member type '("custom-id" "id" "fuzzy"))
+                (if (eq type "id")
+                    (progn
+                      (org-id-update-id-locations (directory-files "." t "\.org\$" t))
+                      (setq-local info (org-export--collect-tree-properties ast info))))
                 (let* ((raw-link (org-element-property :raw-link link))
                        (destination (if (string= type "fuzzy")
                                         (org-export-resolve-fuzzy-link link info)
