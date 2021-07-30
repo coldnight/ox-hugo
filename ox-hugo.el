@@ -2371,7 +2371,8 @@ and rewrite link paths to make blogging more seamless."
   (with-temp-buffer
     (org-id-goto (org-element-property :path link))
     (let ((headline (org-find-top-headline)))
-      (kill-buffer (current-buffer))
+      (if (string= major-mode "fundamental-mode")
+          (kill-buffer (current-buffer)))
       (if headline
           (org-hugo-slug headline)
         ""))))
@@ -4024,6 +4025,8 @@ links."
          (bound-variables (org-export--list-bound-variables))
 	 vars)
     (with-current-buffer buffer
+      (defvar-local info-with-tree-properties nil "info with tree properties for resolve id link.")
+
       (let ((inhibit-modification-hooks t)
             (org-mode-hook nil)
             (org-inhibit-startup t))
@@ -4059,10 +4062,12 @@ links."
                                         (org-export-resolve-fuzzy-link link info)
                                       (progn
                                         ;; update `org-id-locations' if it's nil or empty hash table
-                                        ;; to avoid broken link
+                                        ;; to avoid broken id link
                                         (if (or (eq org-id-locations nil) (zerop (hash-table-count org-id-locations)))
                                             (org-id-update-id-locations (directory-files "." t "\.org\$" t)))
-                                        (org-export-resolve-id-link link (org-export--collect-tree-properties ast info)))))
+                                        (unless info-with-tree-properties
+                                          (setq-local info-with-tree-properties (org-export--collect-tree-properties ast info)))
+                                        (org-export-resolve-id-link link info-with-tree-properties))))
                        (source-path (org-hugo--get-element-path link info))
                        (destination-path (org-hugo--get-element-path destination info))
                        (destination-type (org-element-type destination)))
