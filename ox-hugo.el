@@ -2371,7 +2371,8 @@ and rewrite link paths to make blogging more seamless."
   (with-temp-buffer
     (org-id-goto (org-element-property :path link))
     (let ((headline (org-find-top-headline)))
-      (kill-buffer (current-buffer))
+      (if (string= major-mode "fundamental-mode")
+          (kill-buffer (current-buffer)))
       (if headline
           (org-hugo-slug headline)
         ""))))
